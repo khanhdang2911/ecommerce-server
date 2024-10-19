@@ -1,12 +1,15 @@
 import dotenv from "dotenv";
 import app from "./src/app";
 dotenv.config();
-const PORT = process.env.PORT || 8099;
+const PORT = process.env.DEV_APP_PORT || 8099;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
 });
 
 process.on("SIGINT", () => {
-  console.log("Closing server");
+  server.close(() => {
+    console.log("Closing server");
+    process.exit(0);
+  });
 });

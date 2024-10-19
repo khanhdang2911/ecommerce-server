@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import compression from "compression";
+import mongoInstance from "./dbs/init.mongodb";
 const app = express();
 
 //init middleware
@@ -15,4 +16,5 @@ app.get("/", (req, res) => {
   });
 });
 //init db
+mongoInstance;
 export default app;
