@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import AccessService from "../services/access.service";
-export const signUp = async (req: Request, res: Response) => {
+import * as AccessService from "../services/access.service";
+
+const signUp = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -25,3 +26,6 @@ export const signUp = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export { signUp };
