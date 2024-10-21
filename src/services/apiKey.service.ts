@@ -4,13 +4,7 @@ const createApiKeyService = async (apiKey: string, permission: string) => {
     key: apiKey,
     permissions: [permission],
   });
-  if (apiKey) {
-    return {
-      success: true,
-      message: "Api Key created successfully",
-      data: newApiKey,
-    };
-  }
+  return newApiKey;
 };
 const findByIdService = async (key: string) => {
   const apiKeyInDb = await ApiKey.findOne({ key: key }).lean();

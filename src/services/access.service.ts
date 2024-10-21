@@ -45,17 +45,14 @@ const createShopService = async (
     publicKey,
     tokens.refreshToken
   );
-  return {
-    success: true,
-    message: "Shop created successfully",
-    data: {
-      shop: getInfoData({
-        field: ["_id", "name", "email", "roles"],
-        data: newShop,
-      }),
-      tokens: tokens,
-    },
+  const data = {
+    shop: getInfoData({
+      field: ["_id", "name", "email", "roles"],
+      data: newShop,
+    }),
+    tokens: tokens,
   };
+  return data;
 };
 
 export { createShopService };
