@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as ApiKeyService from "../services/apiKey.service";
+import ErrorResponse from "../core/error.response";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 const HEADER = {
   apiKey: "x-api-key",
   authorization: "Authorization",
@@ -11,36 +13,24 @@ declare module "express-serve-static-core" {
   }
 }
 const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const key = req.headers[HEADER.apiKey]?.toString();
-    if (!key) {
-      res.status(403).json({
-        success: false,
-        message: "Forbidden",
-      });
-    }
-    //check key in database
-    const objKey = await ApiKeyService.findByIdService(key as string);
-    if (!objKey) {
-      res.status(403).json({
-        success: false,
-        message: "Forbidden",
-      });
-    }
-    req.objKey = objKey;
-    next();
-  } catch (error) {}
+  const key = req.headers[HEADER.apiKey]?.toString();
+  if (!key) {
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
+  }
+  //check key in database
+  const objKey = await ApiKeyService.findByIdService(key as string);
+  if (!objKey) {
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
+  }
+  req.objKey = objKey;
+  next();
 };
 
 const permission = (role: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.objKey.permissions.includes(role)) {
-      res.status(403).json({
-        success: false,
-        message: "Forbidden",
-      });
+      throw new ErrorResponse(StatusCodes.FORBIDDEN, "Permission denied");
     }
-    console.log("permission", req.objKey.permissions, role);
     next();
   };
 };

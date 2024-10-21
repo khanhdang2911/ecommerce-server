@@ -6,26 +6,13 @@ const createKeyToken = async (
   publicKey: string,
   refreshToken: string
 ) => {
-  try {
-    const newKeyToken = await KeyToken.create({
-      user,
-      privateKey,
-      publicKey,
-      refreshToken,
-    });
-    if (newKeyToken) {
-      return {
-        success: true,
-        message: "KeyToken created successfully",
-        data: newKeyToken,
-      };
-    }
-  } catch (error) {
-    return {
-      success: false,
-      message: error,
-    };
-  }
+  const newKeyToken = await KeyToken.create({
+    user,
+    privateKey,
+    publicKey,
+    refreshToken,
+  });
+  return newKeyToken;
 };
 
 export { createKeyToken };
