@@ -1,9 +1,15 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import compression from "compression";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import mongoInstance from "./dbs/init.mongodb";
 import router from "./routes";
+import {
+  handleCommonError,
+  handleNotFound,
+} from "./middlewares/handleError.middleware";
+
 const app = express();
 
 //init middleware
@@ -16,4 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", router);
 //init db
 mongoInstance;
+//handle error
+app.use(handleNotFound);
+app.use(handleCommonError);
+
 export default app;

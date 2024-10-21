@@ -1,10 +1,11 @@
 import express from "express";
 import accessRouter from "./access";
 import { checkApiKey, permission } from "../middlewares/checkAuth.middleware";
+import { asyncHandler } from "../middlewares/handleError.middleware";
 
 const router = express.Router();
 //check api key
-router.use(checkApiKey);
+router.use(asyncHandler(checkApiKey));
 //check permission
 router.use(permission("0000"));
 
