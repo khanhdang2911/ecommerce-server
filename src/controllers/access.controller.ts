@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import * as AccessService from "../services/access.service";
 import ErrorResponse from "../core/error.response";
-import { StatusCodes } from "http-status-codes";
+import { StatusCodes, ReasonPhrases } from "http-status-codes";
+import SuccessResponse from "../core/success.response";
 
 const signUp = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -9,7 +10,10 @@ const signUp = async (req: Request, res: Response) => {
     throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
   }
   const newShop = await AccessService.createShopService(name, email, password);
-  res.status(201).json(newShop);
+  //return response
+  new SuccessResponse(StatusCodes.CREATED, ReasonPhrases.CREATED, newShop).send(
+    res
+  );
   return;
 };
 
