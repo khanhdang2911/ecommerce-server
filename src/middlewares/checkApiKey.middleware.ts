@@ -2,16 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import * as ApiKeyService from "../services/apiKey.service";
 import ErrorResponse from "../core/error.response";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-const HEADER = {
-  apiKey: "x-api-key",
-  authorization: "Authorization",
-};
+import HEADER from "../constants/header";
 
-declare module "express-serve-static-core" {
-  interface Request {
-    objKey?: any;
-  }
-}
+// declare module "express-serve-static-core" {
+//   interface Request {
+//     objKey: any;
+//   }
+// }
 const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
   const key = req.headers[HEADER.apiKey]?.toString();
   if (!key) {
@@ -28,7 +25,7 @@ const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
 
 const permission = (role: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.objKey.permissions.includes(role)) {
+    if (!req.objKey?.permissions.includes(role)) {
       throw new ErrorResponse(StatusCodes.FORBIDDEN, "Permission denied");
     }
     next();

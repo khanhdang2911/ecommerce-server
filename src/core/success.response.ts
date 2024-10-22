@@ -4,7 +4,7 @@ class SuccessResponse {
   public constructor(
     public statusCode: number,
     public message: string,
-    public data: object,
+    public data?: object,
     public options?: object
   ) {}
   public send = (res: Response) => {

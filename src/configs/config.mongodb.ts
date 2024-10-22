@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { AppConfig } from "../types/config";
+import { AppConfig } from "./config.app";
 dotenv.config();
 
 const dev: AppConfig = {
