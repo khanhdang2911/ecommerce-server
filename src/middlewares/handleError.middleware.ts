@@ -22,9 +22,4 @@ const handleCommonError = (
   });
 };
 
-const asyncHandler = (fn: any) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    return fn(req, res, next).catch(next);
-  };
-};
-export { handleNotFound, handleCommonError, asyncHandler };
+export { handleNotFound, handleCommonError };
