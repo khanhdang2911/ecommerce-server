@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import * as AccessService from "../services/auth.service";
+import * as AuthService from "../services/auth.service";
 import * as keyTokenService from "../services/keyToken.service";
 import ErrorResponse from "../core/error.response";
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
@@ -20,7 +20,7 @@ const signUp = async (req: Request, res: Response) => {
   if (!name || !email || !password) {
     throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
   }
-  const newShop = await AccessService.createShopService(name, email, password);
+  const newShop = await AuthService.createShopService(name, email, password);
   //return response
   new SuccessResponse(StatusCodes.CREATED, ReasonPhrases.CREATED, newShop).send(
     res
@@ -36,12 +36,11 @@ const login = async (req: Request, res: Response) => {
       "Invalid email or password"
     );
   }
-  const responseData = await AccessService.loginService(email, password);
+  const responseData = await AuthService.loginService(email, password);
   new SuccessResponse(StatusCodes.OK, ReasonPhrases.OK, responseData).send(res);
 };
 
 const logout = async (req: any, res: Response, next: NextFunction) => {
-  console.log("Request", req);
   const { keyToken } = req;
   const userId = new mongoose.Types.ObjectId(keyToken._id as string);
   const delKey = await keyTokenService.removeTokenById(userId);
@@ -51,4 +50,10 @@ const logout = async (req: any, res: Response, next: NextFunction) => {
   new SuccessResponse(StatusCodes.OK, "Logout successfully!").send(res);
 };
 
-export { signUp, login, logout };
+const refreshToken = async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  const shop = req.shop;
+  const dataResponse = await AuthService.refreshTokenService(refreshToken, shop);
+  new SuccessResponse(StatusCodes.OK, ReasonPhrases.OK, dataResponse).send(res);
+};
+export { signUp, login, logout, refreshToken };

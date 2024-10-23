@@ -5,6 +5,7 @@ declare global {
     interface Request {
       objKey?: Record<string, any>;
       keyToken?: Record<string, any>;
+      shop?: Record<string, any>;
     }
   }
 }

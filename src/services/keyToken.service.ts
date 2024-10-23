@@ -19,9 +19,30 @@ const findByUserId = async (userId: mongoose.Types.ObjectId) => {
   const keyToken = await KeyToken.findOne({ user: userId }).lean();
   return keyToken;
 };
-
+const removeTokenByUserId = async (userId: mongoose.Types.ObjectId) => {
+  await KeyToken.deleteOne({ user: userId });
+};
 const removeTokenById = async (id: mongoose.Types.ObjectId) => {
   const delKey = await KeyToken.findByIdAndDelete(id);
   return delKey;
 };
-export { createKeyToken, findByUserId, removeTokenById };
+
+const findTokenByRefreshTokenUsed = async (refreshToken: string) => {
+  const keyToken = await KeyToken.findOne({
+    refreshTokenUsed: refreshToken,
+  }).lean();
+  return keyToken;
+};
+
+const findTokenByRefreshToken = async (refreshToken: string) => {
+  const keyToken = await KeyToken.findOne({ refreshToken });
+  return keyToken;
+};
+export {
+  createKeyToken,
+  findByUserId,
+  removeTokenById,
+  findTokenByRefreshTokenUsed,
+  removeTokenByUserId,
+  findTokenByRefreshToken,
+};

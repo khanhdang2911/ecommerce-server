@@ -4,4 +4,8 @@ const findShopByEmail = async (email: string) => {
   return shop;
 };
 
-export { findShopByEmail };
+const findShopById = async(id: string)=>{
+  const shop = await Shop.findById(id).lean();
+  return shop;
+}
+export { findShopByEmail, findShopById };
