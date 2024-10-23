@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import HEADER from "../constants/header";
 import ErrorResponse from "../core/error.response";
-import { StatusCodes } from "http-status-codes";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { findByUserId } from "../services/keyToken.service";
 import JWT from "jsonwebtoken";
 import mongoose from "mongoose";
-const authentication = async (
+import { findShopById } from "../services/shop.service";
+const refreshTokenAuth = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -13,25 +14,35 @@ const authentication = async (
   //check UserId in header
   const userId = req.headers[HEADER.userId]?.toString();
   if (!userId) {
-    throw new ErrorResponse(StatusCodes.FORBIDDEN, "Invalid Request");
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
   }
   //check keyToken
   const keyToken = await findByUserId(new mongoose.Types.ObjectId(userId));
   if (!keyToken) {
-    throw new ErrorResponse(StatusCodes.FORBIDDEN, "Invalid Request");
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
   }
   //check access token
   const accessToken = req.headers[HEADER.authorization]?.toString();
   if (!accessToken) {
-    throw new ErrorResponse(StatusCodes.FORBIDDEN, "Invalid Token");
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
   }
-  const decoded = JWT.verify(accessToken, keyToken.publicKey);
+  const decoded = JWT.verify(accessToken, keyToken.publicKey, {
+    ignoreExpiration: true,
+  });
 
   if ((decoded as JWT.JwtPayload).userId != userId) {
-    throw new ErrorResponse(StatusCodes.FORBIDDEN, "Invalid Token");
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
   }
+  const shop = await findShopById(userId);
+  if (!shop) {
+    throw new ErrorResponse(
+      StatusCodes.FORBIDDEN,
+      "Invalid Token, Shop not found"
+    );
+  }
+  req.shop = shop;
   req.keyToken = keyToken;
   next();
 };
 
-export default authentication;
+export default refreshTokenAuth;

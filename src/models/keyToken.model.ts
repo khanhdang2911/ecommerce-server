@@ -8,6 +8,7 @@ interface IKeyToken {
   privateKey: string;
   publicKey: string;
   refreshToken: string;
+  refreshTokenUsed: string[];
 }
 const KeyTokenSchema = new Schema<IKeyToken>(
   {
@@ -27,6 +28,9 @@ const KeyTokenSchema = new Schema<IKeyToken>(
     refreshToken: {
       type: String,
       required: true,
+    },
+    refreshTokenUsed: {
+      type: [String],
     },
   },
   {
