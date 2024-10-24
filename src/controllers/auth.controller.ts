@@ -51,9 +51,12 @@ const logout = async (req: any, res: Response, next: NextFunction) => {
 };
 
 const refreshToken = async (req: Request, res: Response) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.refreshToken;
   const shop = req.shop;
-  const dataResponse = await AuthService.refreshTokenService(refreshToken, shop);
+  const dataResponse = await AuthService.refreshTokenService(
+    refreshToken as string,
+    shop
+  );
   new SuccessResponse(StatusCodes.OK, ReasonPhrases.OK, dataResponse).send(res);
 };
 export { signUp, login, logout, refreshToken };

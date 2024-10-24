@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 
 // Declare the Schema of the Mongo model
 /*Collection Name */

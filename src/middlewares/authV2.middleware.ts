@@ -6,11 +6,7 @@ import { findByUserId } from "../services/keyToken.service";
 import JWT from "jsonwebtoken";
 import mongoose from "mongoose";
 import { findShopById } from "../services/shop.service";
-const refreshTokenAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const authV2 = async (req: Request, res: Response, next: NextFunction) => {
   //check UserId in header
   const userId = req.headers[HEADER.userId]?.toString();
   if (!userId) {
@@ -19,6 +15,11 @@ const refreshTokenAuth = async (
   //check keyToken
   const keyToken = await findByUserId(new mongoose.Types.ObjectId(userId));
   if (!keyToken) {
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
+  }
+  //check Refresh Token
+  const refreshToken = req.headers[HEADER.refreshToken]?.toString();
+  if (!refreshToken) {
     throw new ErrorResponse(StatusCodes.FORBIDDEN, ReasonPhrases.FORBIDDEN);
   }
   //check access token
@@ -42,7 +43,8 @@ const refreshTokenAuth = async (
   }
   req.shop = shop;
   req.keyToken = keyToken;
+  req.refreshToken = refreshToken;
   next();
 };
 
-export default refreshTokenAuth;
+export default authV2;
