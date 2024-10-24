@@ -91,18 +91,13 @@ const loginService = async (email: string, password: string) => {
 };
 
 const refreshTokenService = async (refreshToken: string, shop: any) => {
-  if (!refreshToken) {
-    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Invalid request");
-  }
+
   const foundToken = await KeyTokenService.findTokenByRefreshTokenUsed(
     refreshToken
   );
   if (foundToken) {
-    const decodedToken = JWT.verify(refreshToken, foundToken.privateKey);
-    const { userId, email } = decodedToken as JWT.JwtPayload;
-
     await KeyTokenService.removeTokenByUserId(
-      new mongoose.Types.ObjectId(userId as string)
+      new mongoose.Types.ObjectId(shop._id as string)
     );
     throw new ErrorResponse(
       StatusCodes.FORBIDDEN,
@@ -116,13 +111,13 @@ const refreshTokenService = async (refreshToken: string, shop: any) => {
     refreshToken
   );
   if (!holderToken) {
-    throw new ErrorResponse(StatusCodes.UNAUTHORIZED, "Shop not registered 1");
+    throw new ErrorResponse(StatusCodes.UNAUTHORIZED, "Shop not registered");
   }
   const decodedToken = JWT.verify(refreshToken, holderToken.privateKey);
   const { userId, email } = decodedToken as JWT.JwtPayload;
   const foundShop = await findShopById(userId);
   if (!foundShop) {
-    throw new ErrorResponse(StatusCodes.UNAUTHORIZED, "Shop not registered 2");
+    throw new ErrorResponse(StatusCodes.UNAUTHORIZED, "Shop not registered");
   }
   //check shop in request is the same as shop in token
   if (shop._id.toString() != userId) {

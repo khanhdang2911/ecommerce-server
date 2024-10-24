@@ -6,6 +6,7 @@ declare global {
       objKey?: Record<string, any>;
       keyToken?: Record<string, any>;
       shop?: Record<string, any>;
+      refreshToken?: string;
     }
   }
 }
