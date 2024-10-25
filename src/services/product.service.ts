@@ -6,6 +6,7 @@ import {
   Clothing as ClothingMongo,
   Electronic as ElectronicMongo,
 } from "../models/product.model";
+import * as productRepo from "../repositories/product.repo";
 //config product factory
 
 class ProductFactory {
@@ -18,12 +19,68 @@ class ProductFactory {
     product_shop: string,
     product_type: string
   ) {
-    console.log(this.productRegistry);
     const productTypeClass = this.productRegistry[product_type];
     if (!productTypeClass) {
       throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Invalid product type");
     }
     return new productTypeClass(product, product_shop).createProduct();
+  }
+  static async findAllDraft(
+    product_shop: string,
+    limit: number = 50,
+    skip: number = 0
+  ) {
+    const allDraft = await productRepo.findAllDraft(product_shop, limit, skip);
+    if (!allDraft)
+      throw new ErrorResponse(
+        StatusCodes.NOT_FOUND,
+        "Not found any draft product"
+      );
+    return allDraft;
+  }
+  static findAllPublished = async (
+    product_shop: string,
+    limit: number = 50,
+    skip: number = 0
+  ) => {
+    const allPublished = await productRepo.findAllPublished(
+      product_shop,
+      limit,
+      skip
+    );
+    if (!allPublished) {
+      throw new ErrorResponse(
+        StatusCodes.NOT_FOUND,
+        "Not found any published product"
+      );
+    }
+    return allPublished;
+  };
+  static publishProduct = async (product_shop: string, product_id: string) => {
+    const updateProduct = await productRepo.publishProduct(
+      product_shop,
+      product_id
+    );
+    if (!updateProduct) {
+      throw new ErrorResponse(
+        StatusCodes.BAD_REQUEST,
+        "Error when publish product"
+      );
+    }
+    return updateProduct;
+  };
+  static unPublishProduct= async (product_shop: string, product_id: string) => {
+    const updateProduct = await productRepo.unPublishProduct(
+      product_shop,
+      product_id
+    );
+    if (!updateProduct) {
+      throw new ErrorResponse(
+        StatusCodes.BAD_REQUEST,
+        "Error when unpublish product"
+      );
+    }
+    return updateProduct;
   }
 }
 

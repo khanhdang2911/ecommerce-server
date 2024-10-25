@@ -12,17 +12,13 @@ import authV2 from "../../middlewares/authV2.middleware";
 const authRouter = express.Router();
 
 authRouter.post("/signUp", asyncHandler(signUp));
-authRouter.post(
-  "/createApiKey",
-  asyncHandler(auth),
-  asyncHandler(createApiKey)
-);
-
-authRouter.post("/logout", asyncHandler(auth), asyncHandler(logout));
 authRouter.post("/login", asyncHandler(login));
 authRouter.post(
   "/refreshToken",
   asyncHandler(authV2),
   asyncHandler(refreshToken)
 );
+authRouter.use(asyncHandler(auth));
+authRouter.post("/createApiKey", asyncHandler(createApiKey));
+authRouter.post("/logout", asyncHandler(logout));
 export default authRouter;

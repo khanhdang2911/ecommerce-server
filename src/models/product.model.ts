@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-
+import slugify from "slugify";
 // Declare the Schema of the Mongo model
 /*Collection Name */
 const COLLECTION_NAME = "products";
@@ -9,9 +9,15 @@ interface IProduct {
   product_thumb: string;
   product_description: string;
   product_price: number;
+  product_slug: string;
   product_type: string;
   product_shop: Schema.Types.ObjectId;
   product_attributes: any;
+  //more
+  product_ratingAvg?: number;
+  product_variations?: any;
+  isDraft?: boolean;
+  isPublished?: boolean;
 }
 const productSchema = new Schema<IProduct>(
   {
@@ -30,17 +36,41 @@ const productSchema = new Schema<IProduct>(
       type: Number,
       require: true,
     },
+    product_slug: {
+      type: String,
+      require: true,
+    },
     product_type: {
       type: String,
       require: true,
     },
     product_shop: {
       type: Schema.Types.ObjectId,
-      ref: "Shop",
+      ref: "shop",
     },
     product_attributes: {
       type: Schema.Types.Mixed,
       require: true,
+    },
+    //more
+    product_ratingAvg: {
+      type: Number,
+      default: 4.5,
+      min: [0, "Rating must be greater than 0"],
+      max: [5, "Rating must be less than 5"],
+      set: (value: number) => Math.round(value * 10) / 10,
+    },
+    product_variations: {
+      type: Array,
+      default: [],
+    },
+    isDraft: {
+      type: Boolean,
+      default: true,
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -48,7 +78,15 @@ const productSchema = new Schema<IProduct>(
     collection: COLLECTION_NAME,
   }
 );
-
+//middleware start
+productSchema.pre("save", function (next) {
+  console.log("Product middleware");
+  console.log(this.product_name);
+  console.log(slugify(this.product_name, { lower: true }));
+  this.product_slug = slugify(this.product_name, { lower: true });
+  next();
+});
+//middleware end
 interface IClothing {
   brand: string;
   size: string;
