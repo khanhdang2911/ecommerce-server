@@ -65,9 +65,23 @@ const unPublishProduct = async (product_shop: string, product_id: string) => {
   ).lean();
   return updateProduct;
 };
+
+const searchProduct = async (keyword: string) => {
+  const products = await ProductMongo.find(
+    {
+      $text: { $search: keyword },
+    },
+    {
+      score: { $meta: "textScore" },
+    }
+  )
+    .sort({ score: { $meta: "textScore" } })
+    .lean();
+  return products;
+};
 const productQuery = async (condition: any, limit: number, skip: number) => {
   const products = await ProductMongo.find(condition)
-    .populate("product_shop", "_id name email")
+    .populate("product_shop", "name email")
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 })
@@ -75,4 +89,10 @@ const productQuery = async (condition: any, limit: number, skip: number) => {
     .exec();
   return products;
 };
-export { findAllDraft, findAllPublished, publishProduct, unPublishProduct };
+export {
+  findAllDraft,
+  findAllPublished,
+  publishProduct,
+  unPublishProduct,
+  searchProduct,
+};

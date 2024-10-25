@@ -79,11 +79,25 @@ const unPublishProduct = async (req: Request, res: Response) => {
     "Product unpublished successfully!",
     updateProduct
   ).send(res);
-}
+};
+
+const searchProduct = async (req: Request, res: Response) => {
+  const keyword = req.query.keyword;
+  if (!keyword) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
+  }
+  const searchResult = await ProductFactory.searchProduct(keyword as string);
+  new SuccessResponse(
+    StatusCodes.OK,
+    "Search product sucessfully",
+    searchResult
+  ).send(res);
+};
 export {
   createProduct,
   findAllDraft,
   findAllPublished,
   publishProduct,
   unPublishProduct,
+  searchProduct,
 };
