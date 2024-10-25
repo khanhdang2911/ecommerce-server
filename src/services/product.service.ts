@@ -6,24 +6,24 @@ import {
   Clothing as ClothingMongo,
   Electronic as ElectronicMongo,
 } from "../models/product.model";
+//config product factory
 
 class ProductFactory {
+  static productRegistry: any = {};
+  static registerProduct(product_type: string, classRef: any) {
+    this.productRegistry[product_type] = classRef;
+  }
   static createProduct(
     product: IProduct,
     product_shop: string,
     product_type: string
   ) {
-    switch (product_type) {
-      case "Clothing":
-        return new Clothing(product, product_shop).createProduct();
-      case "Electronic":
-        return new Electronic(product, product_shop).createProduct();
-      default:
-        throw new ErrorResponse(
-          StatusCodes.BAD_REQUEST,
-          "Invalid product type"
-        );
+    console.log(this.productRegistry);
+    const productTypeClass = this.productRegistry[product_type];
+    if (!productTypeClass) {
+      throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Invalid product type");
     }
+    return new productTypeClass(product, product_shop).createProduct();
   }
 }
 
@@ -94,5 +94,14 @@ class Electronic extends Product {
     return newProduct;
   }
 }
+//register product types
+const productTypes = [
+  { name: "Electronic", classRef: Electronic },
+  { name: "Clothing", classRef: Clothing },
+];
 
-export { ProductFactory };
+productTypes.forEach((productType) => {
+  ProductFactory.registerProduct(productType.name, productType.classRef);
+});
+//export module
+export { ProductFactory, Clothing, Electronic };
