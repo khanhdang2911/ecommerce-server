@@ -69,7 +69,10 @@ class ProductFactory {
     }
     return updateProduct;
   };
-  static unPublishProduct= async (product_shop: string, product_id: string) => {
+  static unPublishProduct = async (
+    product_shop: string,
+    product_id: string
+  ) => {
     const updateProduct = await productRepo.unPublishProduct(
       product_shop,
       product_id
@@ -81,7 +84,12 @@ class ProductFactory {
       );
     }
     return updateProduct;
-  }
+  };
+  static searchProduct = async (keyword: string) => {
+    
+    const searchResult = await productRepo.searchProduct(keyword);
+    return searchResult;
+  };
 }
 
 class Product {

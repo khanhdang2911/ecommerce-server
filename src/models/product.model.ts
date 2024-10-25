@@ -78,6 +78,9 @@ const productSchema = new Schema<IProduct>(
     collection: COLLECTION_NAME,
   }
 );
+//Index
+productSchema.index({ product_name: "text", product_description: "text" });
+//Index end
 //middleware start
 productSchema.pre("save", function (next) {
   console.log("Product middleware");
