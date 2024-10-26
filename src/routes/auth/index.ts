@@ -11,6 +11,7 @@ import auth from "../../middlewares/auth.middleware";
 import authV2 from "../../middlewares/authV2.middleware";
 const authRouter = express.Router();
 
+//======================================No Authentication==========================
 authRouter.post("/signUp", asyncHandler(signUp));
 authRouter.post("/login", asyncHandler(login));
 authRouter.post(
@@ -18,6 +19,7 @@ authRouter.post(
   asyncHandler(authV2),
   asyncHandler(refreshToken)
 );
+//=======================================Authentication=============================
 authRouter.use(asyncHandler(auth));
 authRouter.post("/createApiKey", asyncHandler(createApiKey));
 authRouter.post("/logout", asyncHandler(logout));

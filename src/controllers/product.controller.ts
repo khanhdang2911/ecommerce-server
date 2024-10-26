@@ -83,14 +83,37 @@ const unPublishProduct = async (req: Request, res: Response) => {
 
 const searchProduct = async (req: Request, res: Response) => {
   const keyword = req.query.keyword;
+  const limit = parseInt(req.query.limit as string);
+  const page = parseInt(req.query.page as string);
+  const sort = req.query.sort;
+  const filter = req.body;
   if (!keyword) {
     throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
   }
-  const searchResult = await ProductFactory.searchProduct(keyword as string);
+  const searchResult = await ProductFactory.searchProduct(
+    keyword as string,
+    limit,
+    page,
+    sort as string,
+    filter
+  );
   new SuccessResponse(
     StatusCodes.OK,
     "Search product sucessfully",
     searchResult
+  ).send(res);
+};
+
+const findProductDetail = async (req: Request, res: Response) => {
+  const product_id = req.params.id;
+  if (!product_id) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
+  }
+  const productDetail = await ProductFactory.findProductDetail(product_id);
+  new SuccessResponse(
+    StatusCodes.OK,
+    "Get product detail successfully",
+    productDetail
   ).send(res);
 };
 export {
@@ -100,4 +123,5 @@ export {
   publishProduct,
   unPublishProduct,
   searchProduct,
+  findProductDetail,
 };

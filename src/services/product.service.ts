@@ -85,10 +85,32 @@ class ProductFactory {
     }
     return updateProduct;
   };
-  static searchProduct = async (keyword: string) => {
-    
-    const searchResult = await productRepo.searchProduct(keyword);
+  //for user
+  static searchProduct = async (
+    keyword: string,
+    limit: number = 50,
+    page: number = 1,
+    sort: string = "ctime",
+    filter: Object = {}
+  ) => {
+    const searchResult = await productRepo.searchProduct(
+      keyword,
+      limit,
+      page,
+      sort,
+      filter,
+      ["product_name", "product_price", "product_thumb", "product_ratingAvg"]
+    );
     return searchResult;
+  };
+  static findProductDetail = async (product_id: string) => {
+    const productDetail = await productRepo.findProductDetail(product_id, [
+      "__v",
+    ]);
+    if (!productDetail) {
+      throw new ErrorResponse(StatusCodes.NOT_FOUND, "Product not found");
+    }
+    return productDetail;
   };
 }
 
