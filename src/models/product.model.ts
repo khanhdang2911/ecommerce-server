@@ -83,10 +83,14 @@ productSchema.index({ product_name: "text", product_description: "text" });
 //Index end
 //middleware start
 productSchema.pre("save", function (next) {
-  console.log("Product middleware");
-  console.log(this.product_name);
-  console.log(slugify(this.product_name, { lower: true }));
   this.product_slug = slugify(this.product_name, { lower: true });
+  next();
+});
+productSchema.pre("findOneAndUpdate", function (next) {
+  const update: any = this.getUpdate();
+  if (update.product_name) {
+    update.product_slug = slugify(update.product_name, { lower: true });
+  }
   next();
 });
 //middleware end

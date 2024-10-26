@@ -22,6 +22,26 @@ const createProduct = async (req: Request, res: Response) => {
   ).send(res);
 };
 
+const updateProduct = async (req: Request, res: Response) => {
+  const product_id = req.params.id;
+  const newProduct = req.body;
+  const product_type = req.body.product_type;
+  const product_shop = req.shop?._id;
+  if (!newProduct || !product_id !== !product_type || !product_shop) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
+  }
+  const updateProduct = await ProductFactory.updateProduct(
+    newProduct,
+    product_id,
+    product_type,
+    product_shop
+  );
+  new SuccessResponse(
+    StatusCodes.OK,
+    "Product updated successfully",
+    updateProduct
+  ).send(res);
+};
 const findAllDraft = async (req: Request, res: Response) => {
   const product_shop = req.shop?._id;
   // const limit = parseInt(req.query.limit as string);
@@ -124,4 +144,5 @@ export {
   unPublishProduct,
   searchProduct,
   findProductDetail,
+  updateProduct,
 };

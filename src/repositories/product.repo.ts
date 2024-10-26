@@ -99,12 +99,28 @@ const searchProduct = async (
 
 const findProductDetail = async (product_id: string, select: Array<string>) => {
   const product = await ProductMongo.findOne({
-    _id: (product_id),
+    _id: product_id,
     isPublished: true,
   })
     .select(unSelectData(select))
     .lean();
   return product;
+};
+const updateProductById = async (
+  newProduct: any,
+  product_id: string,
+  classRef: any
+) => {
+  const updateProduct = await classRef
+    .findOneAndUpdate(
+      {
+        _id: product_id,
+      },
+      newProduct,
+      { new: true }
+    )
+    .lean();
+  return updateProduct;
 };
 const productQuery = async (condition: any, limit: number, skip: number) => {
   const products = await ProductMongo.find(condition)
@@ -124,4 +140,5 @@ export {
   unPublishProduct,
   searchProduct,
   findProductDetail,
+  updateProductById,
 };

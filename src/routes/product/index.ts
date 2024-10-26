@@ -7,6 +7,7 @@ import {
   unPublishProduct,
   searchProduct,
   findProductDetail,
+  updateProduct
 } from "../../controllers/product.controller";
 import asyncHandler from "../../helpers/asyncHandler";
 import auth from "../../middlewares/auth.middleware";
@@ -20,6 +21,7 @@ productRouter.get("/find-product-detail/:id", asyncHandler(findProductDetail));
 productRouter.use(asyncHandler(auth));
 //for shop
 productRouter.post("/create-product", asyncHandler(createProduct));
+productRouter.patch("/update-product/:id", asyncHandler(updateProduct));
 productRouter.get("/find-all-draft", asyncHandler(findAllDraft));
 productRouter.get("/find-all-published", asyncHandler(findAllPublished));
 productRouter.put("/publish-product/:id", asyncHandler(publishProduct));
