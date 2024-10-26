@@ -7,7 +7,7 @@ import {
   Electronic as ElectronicMongo,
 } from "../models/product.model";
 import * as productRepo from "../repositories/product.repo";
-//config product factory
+import { nestedObjectNoUndefined } from "../utils";
 
 class ProductFactory {
   static productRegistry: any = {};
@@ -25,6 +25,28 @@ class ProductFactory {
     }
     return new productTypeClass(product, product_shop).createProduct();
   }
+  static updateProduct = async (
+    newProduct: any,
+    product_id: string,
+    product_type: string,
+    product_shop: string
+  ) => {
+    const productTypeClass = this.productRegistry[product_type];
+    if (!productTypeClass) {
+      throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Invalid product type");
+    }
+    const updateProduct = await new productTypeClass(
+      newProduct,
+      product_shop
+    ).updateProduct(product_id);
+    if (!updateProduct) {
+      throw new ErrorResponse(
+        StatusCodes.BAD_REQUEST,
+        "Error when update product"
+      );
+    }
+    return updateProduct;
+  };
   static async findAllDraft(
     product_shop: string,
     limit: number = 50,
@@ -130,6 +152,14 @@ class Product {
     }
     return product;
   }
+  async updateProduct(product_id: string) {
+    const updateProduct = await productRepo.updateProductById(
+      nestedObjectNoUndefined(this.product),
+      product_id,
+      ProductMongo
+    );
+    return updateProduct;
+  }
 }
 
 class Clothing extends Product {
@@ -155,6 +185,16 @@ class Clothing extends Product {
     }
     return newProduct;
   }
+  async updateProduct(product_id: string) {
+    console.log(this.product.product_attributes);
+    await productRepo.updateProductById(
+      nestedObjectNoUndefined(this.product.product_attributes),
+      product_id,
+      ClothingMongo
+    );
+    const updateProduct = await super.updateProduct(product_id);
+    return updateProduct;
+  }
 }
 
 class Electronic extends Product {
@@ -179,6 +219,15 @@ class Electronic extends Product {
       );
     }
     return newProduct;
+  }
+  async updateProduct(product_id: string) {
+    await productRepo.updateProductById(
+      nestedObjectNoUndefined(this.product.product_attributes),
+      product_id,
+      ElectronicMongo
+    );
+    const updateProduct = await super.updateProduct(product_id);
+    return updateProduct;
   }
 }
 //register product types
