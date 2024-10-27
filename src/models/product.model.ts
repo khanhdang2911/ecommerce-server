@@ -9,6 +9,7 @@ interface IProduct {
   product_thumb: string;
   product_description: string;
   product_price: number;
+  product_quantity: number;
   product_slug: string;
   product_type: string;
   product_shop: Schema.Types.ObjectId;
@@ -33,6 +34,10 @@ const productSchema = new Schema<IProduct>(
       type: String,
     },
     product_price: {
+      type: Number,
+      require: true,
+    },
+    product_quantity: {
       type: Number,
       require: true,
     },

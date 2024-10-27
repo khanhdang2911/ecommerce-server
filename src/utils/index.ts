@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { Schema } from "mongoose";
 type getInfoDataProps = {
   field: Array<string>;
   data: Object;
@@ -11,6 +12,7 @@ const unSelectData = (select: Array<string>) => {
   return Object.fromEntries(select.map((key) => [key, 0]));
 };
 
+const convertToObjectMongo = (id: string) => new Schema.Types.ObjectId(id);
 
 const nestedObjectNoUndefined = (obj: Record<string, any>) => {
   let finalObj: any = {};
@@ -35,4 +37,5 @@ export {
   getInfoData,
   unSelectData,
   nestedObjectNoUndefined,
+  convertToObjectMongo,
 };
