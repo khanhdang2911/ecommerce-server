@@ -8,6 +8,8 @@ import {
 } from "../models/product.model";
 import * as productRepo from "../repositories/product.repo";
 import { nestedObjectNoUndefined } from "../utils";
+import { inventoryInsert } from "./inventory.service";
+import { Schema } from "mongoose";
 
 class ProductFactory {
   static productRegistry: any = {};
@@ -137,20 +139,31 @@ class ProductFactory {
 }
 
 class Product {
-  constructor(public product: IProduct, public product_shop: string) {}
+  constructor(
+    public product: IProduct,
+    public product_shop: Schema.Types.ObjectId
+  ) {}
   async createProduct(id?: any) {
-    const product = await ProductMongo.create({
+    const newProduct = await ProductMongo.create({
       ...this.product,
       product_shop: this.product_shop,
       _id: id,
     });
-    if (!product) {
+    if (!newProduct) {
       throw new ErrorResponse(
         StatusCodes.BAD_REQUEST,
         "Error when created product"
       );
     }
-    return product;
+    //create inventory
+    await inventoryInsert({
+      inven_product_id: newProduct._id as any,
+      inven_location: "unKnown",
+      inven_stock: this.product.product_quantity,
+      inven_shopId: this.product_shop,
+      inven_reservations: [],
+    });
+    return newProduct;
   }
   async updateProduct(product_id: string) {
     const updateProduct = await productRepo.updateProductById(
@@ -163,7 +176,10 @@ class Product {
 }
 
 class Clothing extends Product {
-  constructor(public product: IProduct, public product_shop: string) {
+  constructor(
+    public product: IProduct,
+    public product_shop: Schema.Types.ObjectId
+  ) {
     super(product, product_shop);
   }
   async createProduct() {
@@ -198,7 +214,10 @@ class Clothing extends Product {
 }
 
 class Electronic extends Product {
-  constructor(public product: IProduct, public product_shop: string) {
+  constructor(
+    public product: IProduct,
+    public product_shop: Schema.Types.ObjectId
+  ) {
     super(product, product_shop);
   }
   async createProduct() {
