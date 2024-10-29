@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-const COLLECTION_NAME = "inventory";
-const DOCUMENT_NAME = "inventories";
+const COLLECTION_NAME = "inventories";
+const DOCUMENT_NAME = "inventory";
 
 interface IInventory {
   inven_product_id: Schema.Types.ObjectId;

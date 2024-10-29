@@ -5,4 +5,4 @@ const HEADER = {
   refreshToken: "x-refresh-token",
 };
 
-export default HEADER;
+export { HEADER };

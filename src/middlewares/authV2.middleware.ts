@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import HEADER from "../constants/header";
+import { HEADER } from "../constants/common.constant";
 import ErrorResponse from "../core/error.response";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { findByUserId } from "../services/keyToken.service";
