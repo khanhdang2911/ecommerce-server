@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as ApiKeyService from "../services/apiKey.service";
 import ErrorResponse from "../core/error.response";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import HEADER from "../constants/header";
+import { HEADER } from "../constants/common.constant";
 
 // declare module "express-serve-static-core" {
 //   interface Request {
