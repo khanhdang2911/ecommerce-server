@@ -1,21 +1,67 @@
+import { Schema } from "mongoose";
 import { Discount as DiscountMongo } from "../models/discount.model";
+import { unSelectData } from "../utils";
 const findOne = async (filter: Object) => {
   return await DiscountMongo.findOne(filter);
 };
 
 const findByFilter = async (
   filter: Object,
-  limit?: number,
-  page?: number,
-  select?: Array<string>
+  select?: Array<string>,
+  limit: number = 10,
+  page: number = 1,
+  sort: string = "ctime"
 ) => {
   const skip = limit! * (page! - 1);
+  const sortBy: { [key: string]: 1 | -1 } =
+    sort === "ctime" ? { updatedAt: -1 } : { updatedAt: 1 };
   return await DiscountMongo.find(filter)
     .skip(skip)
     .limit(limit!)
     .select(select!)
+    .sort(sortBy)
     .lean()
     .exec();
 };
 
-export { findOne, findByFilter };
+const findByFilterUnSelect = async (
+  filter: Object,
+  unSelect?: Array<string>,
+  limit: number = 10,
+  page: number = 1,
+  sort: string = "ctime"
+) => {
+  const skip = limit! * (page! - 1);
+  const sortBy: { [key: string]: 1 | -1 } =
+    sort === "ctime" ? { updatedAt: -1 } : { updatedAt: 1 };
+  return await DiscountMongo.find(filter)
+    .skip(skip)
+    .limit(limit!)
+    .select(unSelectData(unSelect!))
+    .sort(sortBy)
+    .lean()
+    .exec();
+};
+
+const findOneAndUpdate = async (
+  filter: Object,
+  update: Object,
+  isNew: boolean
+) => {
+  return await DiscountMongo.findOneAndUpdate(filter, update, { new: isNew });
+};
+const deleteOne = async (filter: Object) => {
+  return await DiscountMongo.deleteOne(filter);
+};
+
+const findByIdAndUpdate = async (id: Schema.Types.ObjectId, update: Object) => {
+  return await DiscountMongo.findByIdAndUpdate(id, update);
+};
+export {
+  findOne,
+  findByFilter,
+  findByFilterUnSelect,
+  deleteOne,
+  findOneAndUpdate,
+  findByIdAndUpdate,
+};

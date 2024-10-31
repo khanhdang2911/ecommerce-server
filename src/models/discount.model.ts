@@ -13,6 +13,7 @@ interface IDiscount {
   discount_end_date: Date;
   discount_apply_count: number; //how many times this discount can be applied
   discount_used_count: number; //how many times this discount has been used
+  discount_user_used: any[];
   discount_max_uses_per_user: number; //how many times this discount can be used by a single user
   discount_min_order_value: number; //minimum order value to apply this discount
   discount_shopId: Schema.Types.ObjectId;
@@ -63,6 +64,11 @@ const DiscountSchema = new Schema<IDiscount>(
       required: true,
       default: 0,
     },
+    discount_user_used:{
+      type: [Schema.Types.ObjectId],
+      required: true,
+      default: [],
+    },
     discount_max_uses_per_user: {
       type: Number,
       required: true,
@@ -95,6 +101,8 @@ const DiscountSchema = new Schema<IDiscount>(
     collection: COLLECTION_NAME,
   }
 );
+//Config something here
+DiscountSchema.index({ discount_code: 1 }, { unique: true });
 
 //Export the model
 const Discount = mongoose.model<IDiscount>(DOCUMENT_NAME, DiscountSchema);

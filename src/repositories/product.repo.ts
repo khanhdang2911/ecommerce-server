@@ -73,9 +73,8 @@ const searchProduct = async (
   page: number,
   sort: string,
   filter: Object,
-  select: Array<string>
+  select?: Array<string>
 ) => {
-  console.log(filter);
   const skip = (page - 1) * limit;
   const sortBy: { [key: string]: 1 | -1 } =
     sort === "ctime" ? { updatedAt: -1 } : { updatedAt: 1 };
@@ -92,7 +91,51 @@ const searchProduct = async (
     .skip(skip)
     .limit(limit)
     .sort({ score: { $meta: "textScore" } }, sortBy)
-    .select(select)
+    .select(select!)
+    .lean();
+  return products;
+};
+
+const findAllProduct = async (
+  filter: Object,
+  select?: Array<string>,
+  limit: number = 10,
+  page: number = 1,
+  sort: string = "ctime"
+) => {
+  const skip = (page - 1) * limit;
+  const sortBy: { [key: string]: 1 | -1 } =
+    sort === "ctime" ? { updatedAt: -1 } : { updatedAt: 1 };
+  const products = await ProductMongo.find({
+    ...filter,
+    isPublished: true,
+  })
+    .skip(skip)
+    .limit(limit)
+    .sort(sortBy)
+    .select(select!)
+    .lean();
+  return products;
+};
+
+const findAllProductUnSelect = async (
+  filter: Object,
+  unSelect?: Array<string>,
+  limit: number = 10,
+  page: number = 1,
+  sort: string = "ctime"
+) => {
+  const skip = (page - 1) * limit;
+  const sortBy: { [key: string]: 1 | -1 } =
+    sort === "ctime" ? { updatedAt: -1 } : { updatedAt: 1 };
+  const products = await ProductMongo.find({
+    ...filter,
+    isPublished: true,
+  })
+    .skip(skip)
+    .limit(limit)
+    .sort(sortBy)
+    .select(unSelectData(unSelect!))
     .lean();
   return products;
 };
@@ -141,4 +184,6 @@ export {
   searchProduct,
   findProductDetail,
   updateProductById,
+  findAllProduct,
+  findAllProductUnSelect,
 };
