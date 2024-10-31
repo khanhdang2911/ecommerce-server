@@ -12,7 +12,6 @@ const createDiscount = async (req: Request, res: Response) => {
     discountInfo as any as IDiscount,
     shopId
   );
-  console.log("newDiscount", newDiscount);
   new SuccessResponse(
     StatusCodes.CREATED,
     "Discount created successfully",
@@ -48,4 +47,68 @@ const getDiscountsByProduct = async (req: Request, res: Response) => {
     results
   ).send(res);
 };
-export { createDiscount, updateDiscount, getDiscountsByProduct };
+
+const getAllProductByDiscount = async (req: Request, res: Response) => {
+  const discountId = req.params.discountId;
+  if (!discountId) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Discount id is required");
+  }
+  const results = await discountService.getAllProductByDiscount(
+    discountId as any
+  );
+  new SuccessResponse(
+    StatusCodes.OK,
+    "Products fetched successfully",
+    results
+  ).send(res);
+};
+
+const getAllDiscountsOfShop = async (req: Request, res: Response) => {
+  const shopId = req.params.shopId;
+  const results = await discountService.getAllDiscountsOfShop(shopId as any);
+  new SuccessResponse(
+    StatusCodes.OK,
+    "Discounts fetched successfully",
+    results
+  ).send(res);
+};
+
+const verifyDiscountCode = async (req: Request, res: Response) => {
+  const verifyDiscount = req.body;
+  const userId = req.shop?._id;
+  console.log(userId);
+  const result = await discountService.verifyDiscountCode(
+    verifyDiscount,
+    userId
+  );
+  new SuccessResponse(StatusCodes.OK, "Discount code verified", result).send(
+    res
+  );
+};
+
+const deleteDiscount = async (req: Request, res: Response) => {
+  const discountId = req.params.discountId;
+  const shopId = req.shop?._id;
+  await discountService.deleteDiscount(discountId as any, shopId);
+  new SuccessResponse(StatusCodes.OK, "Discount deleted successfully").send(
+    res
+  );
+};
+
+const cancelDiscount = async (req: Request, res: Response) => {
+  const userId = req.shop?._id;
+  await discountService.cancelDiscount(req.body, userId);
+  new SuccessResponse(StatusCodes.OK, "Discount cancelled successfully").send(
+    res
+  );
+};
+export {
+  createDiscount,
+  updateDiscount,
+  getDiscountsByProduct,
+  getAllProductByDiscount,
+  getAllDiscountsOfShop,
+  verifyDiscountCode,
+  deleteDiscount,
+  cancelDiscount,
+};

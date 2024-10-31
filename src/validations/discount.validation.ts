@@ -57,4 +57,29 @@ const discountUpdateValidation = async (discountInfo: Object) => {
   });
   return await validationSchema.validateAsync(discountInfo);
 };
-export { discountCreateValidation, discountUpdateValidation };
+
+const verifyDiscountCodeValidation = async (discountInfo: Object) => {
+  const validationSchema = Joi.object({
+    discount_code: Joi.string().required().trim().strict(),
+    discount_shopId: Joi.string().required().trim().strict(),
+    products : Joi.array().required().items(Joi.object({
+      product_id: Joi.string().required().trim().strict(),
+      product_quantity: Joi.number().required().min(1),
+      product_price: Joi.number().required().min(0),
+    }))
+  })
+  return await validationSchema.validateAsync(discountInfo);
+}
+const cancelDiscountValidation = async (discountInfo: Object) => {
+  const validationSchema = Joi.object({
+    discount_code: Joi.string().required().trim().strict(),
+    discount_shopId: Joi.string().required().trim().strict(),
+  });
+  return await validationSchema.validateAsync(discountInfo);
+}
+export {
+  discountCreateValidation,
+  discountUpdateValidation,
+  verifyDiscountCodeValidation,
+  cancelDiscountValidation,
+};
