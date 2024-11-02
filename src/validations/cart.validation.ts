@@ -16,4 +16,11 @@ const updateCartValidation = async (body: Object) => {
   });
   return await schema.validateAsync(body);
 };
-export { addToCardValidation, updateCartValidation };
+
+const deleteProductInCartValidation = async(product: Object)=>{
+  const schema= Joi.object({
+    product_id:Joi.string().required().trim().strict()
+  })
+  return await schema.validateAsync(product)
+}
+export { addToCardValidation, updateCartValidation, deleteProductInCartValidation };

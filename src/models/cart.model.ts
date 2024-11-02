@@ -10,9 +10,10 @@ interface ICart {
   cart_user: string;
   cart_products_count: number;
 }
-interface productInCart {
+interface IProductInCart {
   product_id: string;
   product_quantity: number;
+  product_old_quantity?: number;
 }
 const CartSchema = new Schema<ICart>(
   {
@@ -20,12 +21,15 @@ const CartSchema = new Schema<ICart>(
       type: String,
       required: true,
       default: CART_STATE.active,
-      enum: [...Object.keys(CART_STATE)],
+      enum: [...Object.values(CART_STATE)],
     },
-    cart_products: {
-      type: [],
-      default: [],
-    },
+    cart_products: [
+      {
+        _id: false,
+        product_id: { type: Schema.Types.ObjectId, ref: "product" },
+        product_quantity: { type: Number, default: 1 },
+      },
+    ],
     cart_user: {
       type: String,
       required: true,
@@ -41,7 +45,9 @@ const CartSchema = new Schema<ICart>(
     collection: COLLECTION_NAME,
   }
 );
-
+//config
+CartSchema.index({ cart_user: 1 });
+//config end
 const Cart = mongoose.model<ICart>(DOCUMENT_NAME, CartSchema);
 
-export { Cart, ICart, productInCart };
+export { Cart, ICart, IProductInCart };
