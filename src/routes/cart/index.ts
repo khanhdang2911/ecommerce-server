@@ -14,4 +14,9 @@ cartRouter.post(
   asyncHandler(cartController.addProductToCart)
 );
 cartRouter.put("/update-cart", asyncHandler(cartController.updateCart));
+cartRouter.delete(
+  "/delete-product-in-cart/:product_id",
+  asyncHandler(cartController.deleteProductInCart)
+);
+cartRouter.get("/get-list-product-in-cart/", asyncHandler(cartController.getListProductInCart))
 export default cartRouter;
