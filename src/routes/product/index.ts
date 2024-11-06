@@ -10,7 +10,7 @@ import {
   updateProduct
 } from "../../controllers/product.controller";
 import asyncHandler from "../../helpers/asyncHandler";
-import auth from "../../middlewares/auth.middleware";
+import auth from '../../middlewares/auth.middleware';
 const productRouter = express.Router();
 
 //===================================No Authentications===================================//

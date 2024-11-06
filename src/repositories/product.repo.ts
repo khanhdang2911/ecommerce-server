@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 import { Product as ProductMongo } from "../models/product.model";
 import { unSelectData } from "../utils";
+import ErrorResponse from "../core/error.response";
+import { StatusCodes } from "http-status-codes";
 const findAllDraft = async (
   product_shop: string,
   limit: number,
@@ -72,7 +74,7 @@ const searchProduct = async (
   limit: number,
   page: number,
   sort: string,
-  filter: Object,
+  filter: object,
   select?: Array<string>
 ) => {
   const skip = (page - 1) * limit;
@@ -97,7 +99,7 @@ const searchProduct = async (
 };
 
 const findAllProduct = async (
-  filter: Object,
+  filter: object,
   select?: Array<string>,
   limit: number = 10,
   page: number = 1,
@@ -119,7 +121,7 @@ const findAllProduct = async (
 };
 
 const findAllProductUnSelect = async (
-  filter: Object,
+  filter: object,
   unSelect?: Array<string>,
   limit: number = 10,
   page: number = 1,
@@ -140,12 +142,12 @@ const findAllProductUnSelect = async (
   return products;
 };
 
-const findProductDetail = async (product_id: string, select: Array<string>) => {
+const findProductDetail = async (filter: object, unSelect?: Array<string>) => {
   const product = await ProductMongo.findOne({
-    _id: product_id,
+    ...filter,
     isPublished: true,
   })
-    .select(unSelectData(select))
+    .select(unSelectData(unSelect!))
     .lean();
   return product;
 };
@@ -176,6 +178,47 @@ const productQuery = async (condition: any, limit: number, skip: number) => {
   return products;
 };
 
+const checkProductBelongToShop = async (
+  product_id: string,
+  shop_id: string
+) => {
+  const product = await ProductMongo.findOne({
+    _id: product_id,
+    product_shop: shop_id,
+  }).lean();
+  if (!product) return false;
+  return true;
+};
+
+const checkAndGetDataFromListProduct = async (productList: Array<any>) => {
+  const products = await Promise.all(
+    productList.map(async (product: any) => {
+      const productInDb = await findProductDetail(
+        {
+          _id: product.product_id,
+          product_shop: product.product_shop,
+        },
+        ["__v"]
+      );
+      if (!productInDb) {
+        throw new ErrorResponse(
+          StatusCodes.NOT_FOUND,
+          "Product not found in cart"
+        );
+      }
+      return {
+        product_price: productInDb.product_price,
+        product_id: productInDb._id.toString(),
+        product_quantity: product.product_quantity,
+        product_shop: productInDb.product_shop.toString(),
+        product_name: productInDb.product_name,
+        product_thumb: productInDb.product_thumb,
+      };
+    })
+  );
+  return products;
+};
+
 export {
   findAllDraft,
   findAllPublished,
@@ -186,4 +229,6 @@ export {
   updateProductById,
   findAllProduct,
   findAllProductUnSelect,
+  checkProductBelongToShop,
+  checkAndGetDataFromListProduct,
 };

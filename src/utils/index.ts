@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Schema } from "mongoose";
 type getInfoDataProps = {
   field: Array<string>;
-  data: Object;
+  data: object;
 };
 const getInfoData = ({ field, data }: getInfoDataProps) => {
   return _.pick(data, field);

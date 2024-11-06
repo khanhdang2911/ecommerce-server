@@ -10,4 +10,5 @@ export const CART_ERROR_MESSASE = {
   PRODUCT_NOT_FOUND_IN_CART: "Product not found in cart",
   CANNOT_UPDATE_CART: "Cannot update cart",
   CANNOT_ADD_PRODUCT: "Cannot add product to cart",
+  PRODUCT_NOT_BELONG_TO_SHOP:"Product not belong to shop"
 };
