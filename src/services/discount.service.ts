@@ -225,7 +225,6 @@ const verifyDiscountCode = async (verifyDiscount: any, userId: any) => {
   const userUsedDiscount = discount.discount_user_used.filter((id: any) => {
     return id.toString() === userId.toString();
   });
-  console.log(userUsedDiscount.length, discount.discount_max_uses_per_user);
   if (userUsedDiscount.length >= discount.discount_max_uses_per_user) {
     throw new ErrorResponse(
       StatusCodes.BAD_REQUEST,
@@ -235,9 +234,9 @@ const verifyDiscountCode = async (verifyDiscount: any, userId: any) => {
   //check if discount is applicable to the products
   products.forEach((product: any) => {
     if (
-      !discount.discount_specific_products.find(
-        (id: any) => id.toString() === product.product_id
-      )
+      !discount.discount_specific_products.some((id: any) => {
+        return id.toString() === product.product_id;
+      })
     ) {
       throw new ErrorResponse(
         StatusCodes.BAD_REQUEST,
@@ -248,7 +247,6 @@ const verifyDiscountCode = async (verifyDiscount: any, userId: any) => {
   const checkProducts = await productRepo.findAllProduct({
     _id: { $in: products.map((product: any) => product.product_id) },
     product_shop: discount_shopId,
-    isPublished: true,
   });
   if (checkProducts.length !== products.length) {
     throw new ErrorResponse(
@@ -256,21 +254,34 @@ const verifyDiscountCode = async (verifyDiscount: any, userId: any) => {
       "Some products are not applicable for discount"
     );
   }
-
   //Tinh discount value
   const totalOrderValue = products.reduce((acc: any, product: any) => {
-    return acc + product.product_price * product.product_quantity;
+    const productPrice = checkProducts.find(
+      (p: any) => p._id.toString() === product.product_id
+    ); // check lai gia cho chac an
+    return acc + productPrice?.product_price! * product.product_quantity;
   }, 0);
-  const discountValue =
+  //check min value
+  if (totalOrderValue < discount.discount_min_order_value) {
+    throw new ErrorResponse(
+      StatusCodes.BAD_REQUEST,
+      "Order value is not enough"
+    );
+  }
+  let discountValue =
     discount.discount_type === DISCOUNT_TYPE.percentage
       ? totalOrderValue * (discount.discount_value / 100)
       : totalOrderValue - discount.discount_value;
-  const totalPrice = totalOrderValue - discountValue;
+  let totalPrice = totalOrderValue - discountValue;
   //update
   await discountRepo.findByIdAndUpdate(discount._id as any, {
     $push: { discount_user_used: userId },
     $inc: { discount_used_count: 1 },
   });
+  if (totalPrice < 0) {
+    discountValue = totalOrderValue;
+    totalPrice = 0;
+  }
   return {
     totalOrderValue,
     discountValue,

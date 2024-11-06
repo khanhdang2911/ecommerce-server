@@ -115,7 +115,7 @@ class ProductFactory {
     limit: number = 50,
     page: number = 1,
     sort: string = "ctime",
-    filter: Object = {}
+    filter: object = {}
   ) => {
     const searchResult = await productRepo.searchProduct(
       keyword,
@@ -128,9 +128,12 @@ class ProductFactory {
     return searchResult;
   };
   static findProductDetail = async (product_id: string) => {
-    const productDetail = await productRepo.findProductDetail(product_id, [
-      "__v",
-    ]);
+    const productDetail = await productRepo.findProductDetail(
+      {
+        _id: product_id,
+      },
+      ["__v"]
+    );
     if (!productDetail) {
       throw new ErrorResponse(StatusCodes.NOT_FOUND, "Product not found");
     }
@@ -202,7 +205,6 @@ class Clothing extends Product {
     return newProduct;
   }
   async updateProduct(product_id: string) {
-    console.log(this.product.product_attributes);
     await productRepo.updateProductById(
       nestedObjectNoUndefined(this.product.product_attributes),
       product_id,

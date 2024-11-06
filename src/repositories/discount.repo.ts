@@ -6,7 +6,7 @@ const findOne = async (filter: Object) => {
 };
 
 const findByFilter = async (
-  filter: Object,
+  filter: object,
   select?: Array<string>,
   limit: number = 10,
   page: number = 1,
@@ -25,7 +25,7 @@ const findByFilter = async (
 };
 
 const findByFilterUnSelect = async (
-  filter: Object,
+  filter: object,
   unSelect?: Array<string>,
   limit: number = 10,
   page: number = 1,
@@ -44,17 +44,17 @@ const findByFilterUnSelect = async (
 };
 
 const findOneAndUpdate = async (
-  filter: Object,
-  update: Object,
+  filter: object,
+  update: object,
   isNew: boolean
 ) => {
   return await DiscountMongo.findOneAndUpdate(filter, update, { new: isNew });
 };
-const deleteOne = async (filter: Object) => {
+const deleteOne = async (filter: object) => {
   return await DiscountMongo.deleteOne(filter);
 };
 
-const findByIdAndUpdate = async (id: Schema.Types.ObjectId, update: Object) => {
+const findByIdAndUpdate = async (id: Schema.Types.ObjectId, update: object) => {
   return await DiscountMongo.findByIdAndUpdate(id, update);
 };
 export {

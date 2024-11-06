@@ -8,6 +8,7 @@ import {
 } from "../validations/cart.validation";
 import { CART_ERROR_MESSASE } from "../constants/cart.constant";
 import * as cartRepo from "../repositories/cart.repo";
+import { checkProductBelongToShop } from "../repositories/product.repo";
 const findProductInCart = (cart: any, product_id: string) => {
   return cart.cart_products.findIndex(
     (p: any) => p.product_id.toString() === product_id
@@ -32,6 +33,7 @@ const updateCartQuantity = async (userId: string, product: IProductInCart) => {
   const query = {
     cart_user: userId,
     "cart_products.product_id": product.product_id,
+    "cart_products.product_shop": product.product_shop,
   };
   const update = {
     $inc: {
@@ -114,6 +116,17 @@ const addProductToCartService = async (
 ) => {
   const { error } = await addToCardValidation(product);
   if (error) throw new ErrorResponse(StatusCodes.BAD_REQUEST, error.message);
+  //check product belong to shop or not
+  const checkProductBelongToShopResult = await checkProductBelongToShop(
+    product.product_id,
+    product.product_shop
+  );
+  if (checkProductBelongToShopResult === false) {
+    throw new ErrorResponse(
+      StatusCodes.BAD_REQUEST,
+      CART_ERROR_MESSASE.PRODUCT_NOT_BELONG_TO_SHOP + "hh"
+    );
+  }
   product = { ...product, product_quantity: +product.product_quantity };
   //check xem co trong cart chua
   const userCart = await Cart.findOne({ cart_user: userId });
@@ -124,7 +137,6 @@ const addProductToCartService = async (
     await userCart.save();
     return userCart;
   }
-  console.log(findProductInCart(userCart, product.product_id));
   const updatedCart =
     findProductInCart(userCart, product.product_id) === -1
       ? await updateCartNewProduct(userId, product)
@@ -138,6 +150,7 @@ const updateCartService = async (userId: string, product: IProductInCart) => {
   if (error) {
     throw new ErrorResponse(StatusCodes.BAD_REQUEST, error.message);
   }
+
   const userCart = await cartRepo.findUserCart(userId);
   if (findProductInCart(userCart, product.product_id) === -1) {
     throw new ErrorResponse(
@@ -149,6 +162,7 @@ const updateCartService = async (userId: string, product: IProductInCart) => {
     +product.product_quantity === 0
       ? deleteProductInCartService(userId, product.product_id)
       : updateCartQuantity(userId, {
+          product_shop: product.product_shop,
           product_id: product.product_id,
           product_quantity:
             product.product_quantity - product.product_old_quantity!,

@@ -56,7 +56,6 @@ const findAllDraft = async (req: Request, res: Response) => {
 
 const findAllPublished = async (req: Request, res: Response) => {
   const product_shop = req.shop?._id;
-  console.log(product_shop);
   if (!product_shop) {
     throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Missing required fields");
   }

@@ -76,7 +76,6 @@ const getAllDiscountsOfShop = async (req: Request, res: Response) => {
 const verifyDiscountCode = async (req: Request, res: Response) => {
   const verifyDiscount = req.body;
   const userId = req.shop?._id;
-  console.log(userId);
   const result = await discountService.verifyDiscountCode(
     verifyDiscount,
     userId

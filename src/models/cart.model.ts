@@ -11,6 +11,7 @@ interface ICart {
   cart_products_count: number;
 }
 interface IProductInCart {
+  product_shop: string;
   product_id: string;
   product_quantity: number;
   product_old_quantity?: number;
@@ -27,6 +28,7 @@ const CartSchema = new Schema<ICart>(
       {
         _id: false,
         product_id: { type: Schema.Types.ObjectId, ref: "product" },
+        product_shop: { type: Schema.Types.ObjectId, ref: "shop" },
         product_quantity: { type: Number, default: 1 },
       },
     ],
