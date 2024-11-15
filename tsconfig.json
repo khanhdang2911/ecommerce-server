@@ -15,5 +15,5 @@
       "~/*": ["src/*"] // Đường dẫn tương đối cho các import (alias)
     }
   },
-  "files": ["src/type.d.ts"] // Các file dùng để defined global type cho dự án
+  "files": ["src/types/express/type.d.ts"] // Các file dùng để defined global type cho dự án
 }

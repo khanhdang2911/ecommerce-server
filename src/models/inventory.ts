@@ -25,6 +25,7 @@ const InventorySchema = new Schema<IInventory>(
     inven_stock: {
       type: Number,
       required: true,
+      min: 0,
     },
     inven_shopId: {
       type: Schema.Types.ObjectId,

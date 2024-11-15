@@ -9,5 +9,9 @@ checkoutRouter.post(
   "/checkout-review",
   asyncHandler(checkoutController.checkoutReview)
 );
+checkoutRouter.post(
+  "/order-products",
+  asyncHandler(checkoutController.orderProducts)
+);
 
 export default checkoutRouter;

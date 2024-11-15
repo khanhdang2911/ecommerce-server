@@ -3,6 +3,7 @@ import { Product as ProductMongo } from "../models/product.model";
 import { unSelectData } from "../utils";
 import ErrorResponse from "../core/error.response";
 import { StatusCodes } from "http-status-codes";
+import { updateStock } from "../services/inventory.service";
 const findAllDraft = async (
   product_shop: string,
   limit: number,
@@ -156,6 +157,15 @@ const updateProductById = async (
   product_id: string,
   classRef: any
 ) => {
+  if (newProduct.inven_stock) {
+    const updatedStock = await updateStock(product_id, newProduct.inven_stock);
+    if (!updatedStock) {
+      throw new ErrorResponse(
+        StatusCodes.BAD_REQUEST,
+        "Error when update stock"
+      );
+    }
+  }
   const updateProduct = await classRef
     .findOneAndUpdate(
       {
@@ -165,6 +175,7 @@ const updateProductById = async (
       { new: true }
     )
     .lean();
+
   return updateProduct;
 };
 const productQuery = async (condition: any, limit: number, skip: number) => {

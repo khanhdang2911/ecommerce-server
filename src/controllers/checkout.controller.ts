@@ -17,4 +17,12 @@ const checkoutReview = async (req: Request, res: Response) => {
   ).send(res);
 };
 
-export { checkoutReview };
+const orderProducts = async (req: Request, res: Response) => {
+  const userId = req.shop?._id;
+  const orderInfo = req.body;
+  const result = await checkoutService.orderProductsService(userId, orderInfo);
+  new SuccessResponse(StatusCodes.OK, "Order products successfully", result).send(
+    res
+  );
+}
+export { checkoutReview, orderProducts };
