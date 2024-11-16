@@ -5,12 +5,21 @@ import * as productRepo from "../repositories/product.repo";
 import {
   checkoutReviewValidation,
   orderProductsValidation,
+  updateStatusValidation,
 } from "../validations/checkout.validation";
 import { verifyDiscountCode } from "./discount.service";
 import { CheckOutResponse, ShopOrderNews } from "../models/checkout.model";
 import { acquireLock, releaseLock } from "./redis.service";
 import { Order } from "../models/order.model";
 import { ORDER_STATUS } from "../constants/order.constant";
+import {
+  createOrder,
+  findOrderByFilter,
+  findOrderById,
+  updateOneOrder,
+} from "../repositories/checkout.repo";
+import { increaseStock } from "./inventory.service";
+import { ROLE } from "../constants/common.constant";
 const checkoutReviewService = async (userId: string, checkoutInfo: any) => {
   const { error } = await checkoutReviewValidation(checkoutInfo);
   if (error) {
@@ -131,12 +140,12 @@ const orderProductsService = async (userId: string, orderInfo: any) => {
     }
     await releaseLock(key);
   }
-  const order = await Order.create({
-    order_userId: userId,
+  const order = await createOrder({
+    order_userId: userId as any,
     order_checkout: checkoutResponse,
     order_shipping: orderInfo.user_shipping,
     order_payment: orderInfo.user_payment,
-    order_products: allProducts,
+    order_products_discounts: shop_orders_news,
     order_status: ORDER_STATUS.PENDING,
   });
   if (!order) {
@@ -144,4 +153,97 @@ const orderProductsService = async (userId: string, orderInfo: any) => {
   }
   return order;
 };
-export { checkoutReviewService, orderProductsService };
+
+const cancelOrderSerivce = async (userId: object, orderId: string) => {
+  const order = await findOrderById(orderId);
+  console.log(order);
+  if (!order) {
+    throw new ErrorResponse(StatusCodes.NOT_FOUND, "Order not found");
+  }
+  if (userId.toString() !== order.order_userId.toString()) {
+    throw new ErrorResponse(
+      StatusCodes.FORBIDDEN,
+      "You are not allowed to cancel this order"
+    );
+  }
+  if (order.order_status !== ORDER_STATUS.PENDING) {
+    throw new ErrorResponse(
+      StatusCodes.BAD_REQUEST,
+      "Order is not pending, cannot cancel"
+    );
+  }
+  const allProducts = order.order_products_discounts.flatMap(
+    (shop_order: any) => {
+      return shop_order.shop_products.map((product) => product);
+    }
+  );
+  for (let product of allProducts) {
+    await increaseStock(product.product_id, product.product_quantity);
+  }
+  const orderCanceled = await updateOneOrder(
+    { _id: orderId },
+    { order_status: ORDER_STATUS.CANCELLED }
+  );
+  if (!orderCanceled) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Cannot cancel order");
+  }
+  return orderCanceled;
+};
+export { checkoutReviewService, orderProductsService, cancelOrderSerivce };
+
+const getOrderForUserService = async (userId: object, orderId: string) => {
+  const order = await findOrderById(orderId);
+  if (!order) {
+    throw new ErrorResponse(StatusCodes.NOT_FOUND, "Order not found");
+  }
+  if (userId.toString() !== order.order_userId.toString()) {
+    throw new ErrorResponse(
+      StatusCodes.FORBIDDEN,
+      "You are not allowed to get this order"
+    );
+  }
+  return order;
+};
+
+const getAllOrdersForUserService = async (userId: object) => {
+  const orders = await findOrderByFilter({ order_userId: userId });
+  if (!orders) {
+    throw new ErrorResponse(StatusCodes.NOT_FOUND, "Orders not found");
+  }
+  return orders;
+};
+
+const canUpdateOrderStatus = (role: string, orderStatus: string) => {
+  if (role === ROLE.SHOP) {
+    return (
+      orderStatus === ORDER_STATUS.CONFIRMED ||
+      orderStatus === ORDER_STATUS.CANCELLED
+    );
+  }
+  return true;
+};
+
+const updateOrderStatusService = async (
+  orderId: string,
+  body: any,
+  role: string = "admin"
+) => {
+  const { error } = await updateStatusValidation(body);
+  if (error) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, error.message);
+  }
+  if (!canUpdateOrderStatus(role, body.order_status)) {
+    throw new ErrorResponse(StatusCodes.FORBIDDEN, "Access denied xxx");
+  }
+  const updatedOrder = await updateOneOrder({ _id: orderId }, body);
+  if (!updatedOrder) {
+    throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Cannot update order");
+  }
+  return updatedOrder;
+};
+
+export {
+  getOrderForUserService,
+  getAllOrdersForUserService,
+  updateOrderStatusService,
+};

@@ -21,7 +21,7 @@ const updateStock = async (productId: string, quantity: number) => {
     new: true,
   };
   return await Inventory.findOneAndUpdate(query, update, options);
-}
+};
 const decreaseStock = async (productId: string, quantity: number) => {
   const inventory = await findOneInventory(productId);
   if (!inventory || inventory.inven_stock < quantity) {
@@ -40,4 +40,20 @@ const decreaseStock = async (productId: string, quantity: number) => {
   };
   return await Inventory.findOneAndUpdate(query, update, options);
 };
-export { inventoryInsert, decreaseStock, updateStock };
+
+const increaseStock = async (productId: string, quantity: number) => {
+  const query = {
+    inven_product_id: productId,
+  };
+  const update = {
+    $inc: {
+      inven_stock: quantity,
+    },
+  };
+  const options = {
+    new: true,
+  };
+  return Inventory.findOneAndUpdate(query, update, options);
+};
+
+export { inventoryInsert, decreaseStock, updateStock, increaseStock };
