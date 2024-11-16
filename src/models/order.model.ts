@@ -9,7 +9,7 @@ interface IOrder {
   order_checkout: object;
   order_shipping: object;
   order_payment: object;
-  order_products: Array<any>;
+  order_products_discounts: Array<object>;
   order_status: string;
 }
 /*
@@ -44,7 +44,7 @@ const OrderSchema = new Schema<IOrder>(
       required: true,
       default: {},
     },
-    order_products: {
+    order_products_discounts: {
       type: [Object],
       required: true,
     },

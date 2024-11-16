@@ -4,5 +4,9 @@ const HEADER = {
   authorization: "authorization", //access token
   refreshToken: "x-refresh-token",
 };
-
-export { HEADER };
+const ROLE = {
+  ADMIN: "admin",
+  USER: "user",
+  SHOP: "shop",
+};
+export { HEADER, ROLE };

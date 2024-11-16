@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { PAYMENT_METHOD } from '../constants/order.constant';
+import { ORDER_STATUS, PAYMENT_METHOD } from "../constants/order.constant";
 
 const checkoutReviewValidation = async (body: object) => {
   const schema = Joi.object({
@@ -35,10 +35,29 @@ const orderProductsValidation = async (body: object) => {
       shipping_country: Joi.string().required().trim().strict(),
     }),
     user_payment: Joi.object({
-      payment_method: Joi.string().valid(...Object.values(PAYMENT_METHOD)).required().trim().strict(),
+      payment_method: Joi.string()
+        .valid(...Object.values(PAYMENT_METHOD))
+        .required()
+        .trim()
+        .strict(),
       payment_fee: Joi.number().required(),
     }),
   });
   return await schema.validateAsync(body);
 };
-export { checkoutReviewValidation, orderProductsValidation };
+
+const updateStatusValidation = async (body: object) => {
+  const schema = Joi.object({
+    order_status: Joi.string()
+      .valid(...Object.values(ORDER_STATUS))
+      .required()
+      .trim()
+      .strict(),
+  });
+  return await schema.validateAsync(body);
+};
+export {
+  checkoutReviewValidation,
+  orderProductsValidation,
+  updateStatusValidation,
+};
