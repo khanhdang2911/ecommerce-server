@@ -4,6 +4,8 @@ import productRouter from "./product";
 import discountRouter from "./discount";
 import cartRouter from "./cart";
 import checkoutRouter from "./checkout";
+import commentRouter from "./comment/index";
+
 import { checkApiKey, permission } from "../middlewares/checkApiKey.middleware";
 import asyncHandler from "../helpers/asyncHandler";
 const router = express.Router();
@@ -17,4 +19,5 @@ router.use("/v1/api/product", productRouter);
 router.use("/v1/api/discount", discountRouter);
 router.use("/v1/api/cart", cartRouter);
 router.use("/v1/api/checkout", checkoutRouter);
+router.use("/v1/api/comment", commentRouter);
 export default router;
