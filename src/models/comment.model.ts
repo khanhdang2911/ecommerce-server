@@ -41,7 +41,9 @@ const CommentSchema = new Schema<IComment>(
     collection: COLLECTION_NAME,
   }
 );
-
+//create index
+CommentSchema.index({ _id: 1, comment_productId: 1 });
+CommentSchema.index({ comment_productId: 1 });
 //Export the model
 const Comment = mongoose.model<IComment>(DOCUMENT_NAME, CommentSchema);
 

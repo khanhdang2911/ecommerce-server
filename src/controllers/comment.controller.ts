@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import {
   createCommentService,
+  deleteCommentService,
   getCommentsByProductService,
-  getCommentsService,
+  updateCommentService,
 } from "../services/comment.service";
 import SuccessResponse from "../core/success.response";
 import { StatusCodes } from "http-status-codes";
@@ -27,4 +28,23 @@ const getCommentsByProduct = async (req: Request, res: Response) => {
     results
   ).send(res);
 };
-export { createComment, getCommentsByProduct };
+
+const updateComment = async (req: Request, res: Response) => {
+  const userId = req.shop?._id;
+  const commentId = req.params.commentId;
+  const commentData = req.body;
+  const result = await updateCommentService(userId, commentId, commentData);
+  new SuccessResponse(
+    StatusCodes.OK,
+    "Comment updated successfully",
+    result
+  ).send(res);
+};
+
+const deleteComment = async (req: Request, res: Response) => {
+  const userId = req.shop?._id;
+  const commentId = req.params.commentId;
+  await deleteCommentService(userId, commentId);
+  new SuccessResponse(StatusCodes.OK, "Comment deleted successfully").send(res);
+};
+export { createComment, getCommentsByProduct, updateComment, deleteComment };

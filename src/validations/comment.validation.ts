@@ -11,4 +11,10 @@ const createCommentValidation = async (object: object) => {
   return await schema.validateAsync(object);
 };
 
-export { createCommentValidation };
+const updateCommentValidation = async (object: object) => {
+  const schema = Joi.object({
+    comment_content: Joi.string().required().trim().strict(),
+  });
+  return await schema.validateAsync(object);
+};
+export { createCommentValidation, updateCommentValidation };
