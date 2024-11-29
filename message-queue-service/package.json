@@ -1,0 +1,36 @@
+{
+  "name": "message-queue-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "npx nodemon",
+    "build": "rimraf ./dist && tsc && tsc-alias",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.1",
+    "nodemon": "^3.1.7",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/express": "^5.0.0",
+    "amqplib": "^0.10.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jest": "^29.7.0",
+    "mongoose": "^8.8.3"
+  }
+}
