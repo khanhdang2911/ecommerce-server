@@ -1,13 +1,20 @@
-import express from "express";
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+import {
+  consumerExchangeService,
+  consumerQueueService,
+} from "./services/messageQueue.service";
+
+// const queue = "test-queue";
+// consumerQueueService(queue).then(() => {
+//   console.log("Consumer started...");
+// });
+
+// const exchangeName = "test-exchange";
+// consumerExchangeService(exchangeName).then(() => {
+//   console.log("Consumer started...");
+// });
 
 
-app.get("/", (req, res, next) => {
-  res.send("Hello World");
-});
-
-app.listen(8199, () => {
-  console.log("Server is running on port 8199");
+const exchangeName = "test-exchange-topic";
+consumerExchangeService(exchangeName).then(() => {
+  console.log("Consumer started...");
 });
