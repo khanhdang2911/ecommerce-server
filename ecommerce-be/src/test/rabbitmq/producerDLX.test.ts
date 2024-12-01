@@ -12,11 +12,13 @@ const producerDLX = async () => {
       deadLetterExchange: exchangeDLXName,
       deadLetterRoutingKey: routingDLXKey,
     });
-    const message = "Product name: iphone 12, price: 1000, quantity: 10";
-    channel.sendToQueue(queueResult.queue, Buffer.from(message), {
-      expiration: 10000,
-    });
-    console.log(`Message: ${message} sent to queue: ${queue}`);
+    for (let i = 0; i < 10; i++) {
+      const message = "Product name: iphone 12, price: 1000, quantity: " + i;
+      channel.sendToQueue(queueResult.queue, Buffer.from(message), {
+        expiration: 10000,
+      });
+      console.log(`Message: ${message} sent to queue: ${queue}`);
+    }
   } catch (error) {
     console.error(error);
   }
