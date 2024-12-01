@@ -1,7 +1,4 @@
-import {
-  connectToRabbitMQ,
-  consumerExchange,
-} from "~/dbs/init.rabbit";
+import { connectToRabbitMQ, consumerExchange } from "~/dbs/init.rabbit";
 
 const consumerExchangeService = async (exchangeName: string) => {
   try {
@@ -24,15 +21,21 @@ const receiveNotificationNormal = async () => {
     }
     const { channel } = result;
     const queue = "notification-queue";
+    channel.prefetch(1);// xu li 1 message tai 1 thoi diem, tranh truong hop xu li nhieu message cung 1 luc
     channel.consume(queue, (message) => {
       try {
-        const randomNumber = Math.random();
-        console.log("Random number::", randomNumber);
-        if (randomNumber < 0.8) {
-          throw new Error("Failed to process message");
-        }
-        console.log("Received message::", message?.content.toString());
-        channel.ack(message!);
+        // const randomNumber = Math.random();
+        // console.log("Random number::", randomNumber);
+        // if (randomNumber < 0.8) {
+        //   throw new Error("Failed to process message");
+        // }
+        const randomSeconds = Math.random() * 1000;
+
+        console.log("Random seconds::", randomSeconds);
+        setTimeout(() => {
+          console.log("Received message::", message?.content.toString());
+          channel.ack(message!);
+        }, randomSeconds);
       } catch (error: any) {
         console.log("Error::", error.message);
         if (message) {
