@@ -1,4 +1,4 @@
-import { createClient, RedisClientType } from "redis";
+import { createClient } from "redis";
 import dotenv from "dotenv";
 import {
   REDIS_CONNECT_STATUS,

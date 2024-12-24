@@ -7,13 +7,14 @@
     "build": "rimraf ./dist && tsc && tsc-alias",
     "start": "node dist/server.js"
   },
-  "type": "commonjs",
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@types/amqplib": "^0.10.5",
+    "accesscontrol": "^2.2.1",
     "amqplib": "^0.10.5",
     "bcrypt": "^5.1.1",
     "express": "^4.21.1",
